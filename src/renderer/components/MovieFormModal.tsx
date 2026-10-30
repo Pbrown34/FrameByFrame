@@ -40,6 +40,138 @@ export default function MovieFormModal({
   const isAdding = selectedMovie.id === -1;
   const isEditing = modalMode === "edit";
 
+  const tmdbSearch = (
+    <>
+      <label>
+        {isAdding ? "Search TMDB to add a movie" : "Search TMDB"}
+        <input
+          autoFocus={!isEditing}
+          value={tmdbQuery}
+          onChange={(event) => setTmdbQuery(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              void searchTmdb();
+            }
+          }}
+          placeholder="Search for a movie..."
+        />
+      </label>
+
+      <button
+        type="button"
+        className="add-button"
+        disabled={isSearchingTmdb}
+        onClick={() => void searchTmdb()}
+      >
+        {isSearchingTmdb ? "Searching…" : "Search TMDB"}
+      </button>
+
+      {tmdbError && (
+        <p role="alert" className="modal-note">
+          {tmdbError}
+        </p>
+      )}
+
+      {tmdbResults.length > 0 && (
+        <div className="tmdb-results">
+          {tmdbResults.map((movie) => (
+            <button
+              type="button"
+              key={movie.tmdbId}
+              className="tmdb-result"
+              onClick={() => selectTmdbMovie(movie)}
+            >
+              {movie.posterPath ? (
+                <img
+                  src={`https://image.tmdb.org/t/p/w185${movie.posterPath}`}
+                  alt=""
+                  className="tmdb-result-poster"
+                />
+              ) : (
+                <div className="tmdb-result-poster tmdb-no-poster">
+                  No poster
+                </div>
+              )}
+
+              <span className="tmdb-result-info">
+                <strong>{movie.title}</strong>
+                <span>{movie.year ?? "Release year unknown"}</span>
+                <span>{movie.genre}</span>
+                {movie.overview && (
+                  <span className="tmdb-result-overview">
+                    {movie.overview}
+                  </span>
+                )}
+              </span>
+            </button>
+          ))}
+        </div>
+      )}
+    </>
+  );
+
+  const movieDetailsFields = (
+    <>
+      <label className="movie-title-field">
+        Movie title
+        <input
+          value={draft.title}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              title: event.target.value,
+            }))
+          }
+          placeholder="e.g. Arrival"
+        />
+      </label>
+
+      <label>
+        Release year (optional)
+        <input
+          inputMode="numeric"
+          value={draft.year}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              year: event.target.value,
+            }))
+          }
+          placeholder="e.g. 2016"
+        />
+      </label>
+
+      <label>
+        Genre (optional)
+        <input
+          value={draft.genre}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              genre: event.target.value,
+            }))
+          }
+          placeholder="e.g. Sci-Fi"
+        />
+      </label>
+
+      <label className="movie-poster-field">
+        Poster image URL (optional)
+        <input
+          value={draft.poster}
+          onChange={(event) =>
+            setDraft((current) => ({
+              ...current,
+              poster: event.target.value,
+            }))
+          }
+          placeholder="https://…"
+        />
+      </label>
+    </>
+  );
+
   return (
     <div
       className="modal-backdrop"
@@ -49,7 +181,10 @@ export default function MovieFormModal({
         }
       }}
     >
-      <section className="rating-modal" aria-labelledby="rating-title">
+      <section
+        className={`rating-modal movie-form-modal${isEditing ? " is-editing" : ""}`}
+        aria-labelledby="rating-title"
+      >
         <button
           type="button"
           className="modal-close"
@@ -68,134 +203,29 @@ export default function MovieFormModal({
         <div className="movie-form-fields">
           {(isAdding || isEditing) && (
             <>
-              <label>
-                Search TMDB
-                <input
-                  autoFocus
-                  value={tmdbQuery}
-                  onChange={(event) => setTmdbQuery(event.target.value)}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter") {
-                      event.preventDefault();
-                      void searchTmdb();
-                    }
-                  }}
-                  placeholder="Search for a movie..."
-                />
-              </label>
-
-              <button
-                type="button"
-                className="add-button"
-                disabled={isSearchingTmdb}
-                onClick={() => void searchTmdb()}
-              >
-                {isSearchingTmdb ? "Searching…" : "Search TMDB"}
-              </button>
-
-              {tmdbError && (
-                <p role="alert" className="modal-note">
-                  {tmdbError}
-                </p>
-              )}
-
-              {tmdbResults.length > 0 && (
-                <div className="tmdb-results">
-                  {tmdbResults.map((movie) => (
-                    <button
-                      type="button"
-                      key={movie.tmdbId}
-                      className="tmdb-result"
-                      onClick={() => selectTmdbMovie(movie)}
-                    >
-                      {movie.posterPath ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w185${movie.posterPath}`}
-                          alt=""
-                          className="tmdb-result-poster"
-                        />
-                      ) : (
-                        <div className="tmdb-result-poster tmdb-no-poster">
-                          No poster
-                        </div>
-                      )}
-
-                      <span className="tmdb-result-info">
-                        <strong>{movie.title}</strong>
-                        <span>{movie.year ?? "Release year unknown"}</span>
-                        <span>{movie.genre}</span>
-                        {movie.overview && (
-                          <span className="tmdb-result-overview">
-                            {movie.overview}
-                          </span>
-                        )}
-                      </span>
-                    </button>
-                  ))}
-                </div>
+              {isEditing ? (
+                <details className="movie-form-search">
+                  <summary>Search TMDB for a replacement</summary>
+                  {tmdbSearch}
+                </details>
+              ) : (
+                tmdbSearch
               )}
 
               <p className="modal-note">
-                Search TMDB to fill in movie details, or enter them manually
-                below.
+                {isEditing
+                  ? "Update the movie details below, or search TMDB for a replacement."
+                  : "Search TMDB to find your movie and fill in its details."}
               </p>
 
-              <label>
-                Movie title
-                <input
-                  value={draft.title}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      title: event.target.value,
-                    }))
-                  }
-                  placeholder="e.g. Arrival"
-                />
-              </label>
-
-              <label>
-                Release year (optional)
-                <input
-                  inputMode="numeric"
-                  value={draft.year}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      year: event.target.value,
-                    }))
-                  }
-                  placeholder="e.g. 2016"
-                />
-              </label>
-
-              <label>
-                Genre (optional)
-                <input
-                  value={draft.genre}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      genre: event.target.value,
-                    }))
-                  }
-                  placeholder="e.g. Sci-Fi"
-                />
-              </label>
-
-              <label>
-                Poster image URL (optional)
-                <input
-                  value={draft.poster}
-                  onChange={(event) =>
-                    setDraft((current) => ({
-                      ...current,
-                      poster: event.target.value,
-                    }))
-                  }
-                  placeholder="https://…"
-                />
-              </label>
+              {isAdding ? (
+                <details className="movie-form-manual">
+                  <summary>Enter details manually instead</summary>
+                  {movieDetailsFields}
+                </details>
+              ) : (
+                movieDetailsFields
+              )}
             </>
           )}
         </div>

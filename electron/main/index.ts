@@ -1,6 +1,5 @@
 
 import dotenv from "dotenv";
-import { fileURLToPath } from "node:url";
 import { app, BrowserWindow, ipcMain } from "electron";
 import { join } from "node:path";
 import { asc, eq } from "drizzle-orm";
@@ -8,7 +7,7 @@ import { db, movies } from "./database";
 
 
 dotenv.config({
-  path: join(process.cwd(), ".env"),
+  path: join(app.getPath("userData"), ".env"),
 });
 
 // ------------------------------

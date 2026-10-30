@@ -1,16 +1,14 @@
 {
   "name": "movie_rating_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "A desktop movie library and rating app",
   "main": "./out/main/index.js",
-  "directories": {
-    "test": "tests"
-  },
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "typecheck": "tsc -b"
+    "typecheck": "tsc -b",
+    "dist:win": "npm run build && electron-builder --win nsis"
   },
   "keywords": [],
   "author": "",
@@ -26,6 +24,23 @@
     "tailwindcss": "^4.3.3",
     "zustand": "^5.0.16"
   },
+  "build": {
+  "appId": "com.framebyframe.app",
+  "productName": "FrameByFrame",
+  "directories": {
+    "output": "release"
+  },
+  "win": {
+    "icon": "assets/framebyframe.ico",
+    "target": "nsis"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
+  }
+},
   "devDependencies": {
     "@electron/rebuild": "^4.2.1",
     "@types/better-sqlite3": "^9.6.0",
@@ -34,6 +49,7 @@
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
     "electron": "^45.1.0",
+    "electron-builder": "^26.18.0",
     "electron-vite": "^6.0.0",
     "typescript": "^7.0.2",
     "vite": "^8.3.5"

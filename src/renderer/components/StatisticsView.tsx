@@ -19,7 +19,7 @@ export default function StatisticsView({
   );
 
   return (
-    <section className="library-section">
+    <section className="library-section statistics-view">
       <div className="section-heading">
         <div>
           <h2>Your statistics</h2>
@@ -30,27 +30,27 @@ export default function StatisticsView({
       <div className="stats-grid">
         <div className="stat-card">
           <span className="stat-label">TOTAL MOVIES</span>
-          <strong>{statistics.totalMovies}</strong>
+          <strong className="stat-value">{statistics.totalMovies}</strong>
         </div>
 
         <div className="stat-card">
           <span className="stat-label">WATCHED</span>
-          <strong>{statistics.watchedCount}</strong>
+          <strong className="stat-value">{statistics.watchedCount}</strong>
         </div>
 
         <div className="stat-card">
           <span className="stat-label">WATCHLIST</span>
-          <strong>{statistics.watchlistCount}</strong>
+          <strong className="stat-value">{statistics.watchlistCount}</strong>
         </div>
 
         <div className="stat-card">
           <span className="stat-label">COMPLETION</span>
-          <strong>{statistics.completionPercentage}%</strong>
+          <strong className="stat-value">{statistics.completionPercentage}%</strong>
         </div>
 
         <div className="stat-card">
           <span className="stat-label">AVERAGE RATING</span>
-          <strong>{statistics.averageRating} ★</strong>
+          <strong className="stat-value">{statistics.averageRating} ★</strong>
         </div>
       </div>
 
